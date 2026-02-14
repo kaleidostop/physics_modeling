@@ -8,11 +8,17 @@ async function run() {
       a: +a.value,
       U0: +U0.value,
       kind: kind.value,
-      kmax: +kmax.value
+      kmax: +kmax.value,
+      N: +N.value
     })
   });
 
   let d = await res.json();
+
+  document.getElementById("nvalue").innerText =
+    "Число связанных состояний: " + d.n_states;
+  document.getElementById("kvalue").innerText =
+    "Отображаемое число связанных состояний: " + d.k;
 
   // 1. Потенциал
   Plotly.newPlot("Uplot", [{
@@ -40,7 +46,7 @@ async function run() {
 
   Plotly.newPlot("psiplot", psi_traces, {
     title: {
-        text: mode === "psi" ? "ψ_n(x)" : "$$|ψ_n(x)|^2",
+        text: mode === "psi" ? "ψ_n(x)" : "|ψ_n(x)|^2",
         font: {size: 20}
     },
     xaxis: {title: "x, нм"}
@@ -68,5 +74,23 @@ async function run() {
     title: "Энергетические уровни",
     xaxis: {title: "x, нм"},
     yaxis: {title: "Энергия, эВ"}
+  });
+
+  // 4. E(k)
+  let indices = [];
+    for (let i = 0; i < d.energies.length; i++) {
+      indices.push(i);
+    }
+  let E_func_k = [];
+
+  Plotly.newPlot("Ekplot", [{
+    x: indices,
+    y: d.energies,
+    mode: "markers+lines",
+    name: "E(k)"
+  }], {
+    title: "E(k)",
+    xaxis: {title: "k"},
+    yaxis: {title: "E (эВ)"}
   });
 }
